@@ -1,8 +1,9 @@
 import { Order } from '../models/association.js'
 
 const orderService = {
-  createOrder: async (orderData) => {
-    const { userId, foodId, amount, code, arrSubId } = orderData
+  createOrder: async (req) => {
+    const { userId, foodId, amount, code, arrSubId } = req.body
+    
     return await Order.create({
       user_id: userId,
       food_id: foodId,
