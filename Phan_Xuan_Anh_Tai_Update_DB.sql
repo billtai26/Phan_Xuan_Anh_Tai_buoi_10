@@ -169,3 +169,13 @@ WHERE o.user_id IS NULL
   AND r.user_id IS NULL
   
 ALTER TABLE `order` ADD COLUMN `order_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST
+
+-- Thêm khóa chính phức hợp cho bảng like_res
+ALTER TABLE `like_res` MODIFY COLUMN `user_id` INT NOT NULL;
+ALTER TABLE `like_res` MODIFY COLUMN `res_id` INT NOT NULL;
+ALTER TABLE `like_res` ADD PRIMARY KEY (`user_id`, `res_id`);
+
+-- Thêm khóa chính phức hợp cho bảng rate_res
+ALTER TABLE `rate_res` MODIFY COLUMN `user_id` INT NOT NULL;
+ALTER TABLE `rate_res` MODIFY COLUMN `res_id` INT NOT NULL;
+ALTER TABLE `rate_res` ADD PRIMARY KEY (`user_id`, `res_id`);

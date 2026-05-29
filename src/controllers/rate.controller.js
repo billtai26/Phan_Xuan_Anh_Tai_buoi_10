@@ -1,10 +1,10 @@
-import rateService from '../services/rate.service.js'
+import { rateService } from '../services/rate.service.js'
 import { responseSuccess } from '../common/helpers/response.helper.js'
 
-const rateController = {
+export const rateController = {
   async addRate(req, res, next) {
     const data = await rateService.addRate(req)
-    const response = responseSuccess(data, 'Thêm đánh giá mới thành công')
+    const response = responseSuccess(data, 'Thêm đánh giá mới thành công', 201)
     res.json(response)
   },
 
@@ -26,5 +26,3 @@ const rateController = {
     res.json(response)
   }
 }
-
-export default rateController

@@ -1,36 +1,54 @@
+import { prisma } from '../common/prisma/connect.prisma.js'
 import { NotFoundError } from '../common/helpers/exception.helper.js'
-import { RateRes, User, Restaurant } from '../models/association.js'
 
-const rateService = {
-  addRate: async (req) => {
+export const rateService = {
+  async addRate(req) {
     const { userId, resId, amount } = req.body
 
-    const existingRate = await RateRes.findOne({
-      where: { user_id: userId, res_id: resId }
+    const existingRate = await prisma.rate_res.findFirst({
+      where: {
+        user_id: Number(userId),
+        res_id: Number(resId)
+      }
     })
 
     if (existingRate) {
-      existingRate.amount = amount
-      existingRate.date_rate = new Date()
-      await existingRate.save()
-      return existingRate
+      await prisma.rate_res.updateMany({
+        where: {
+          user_id: Number(userId),
+          res_id: Number(resId)
+        },
+        data: {
+          amount: Number(amount),
+          date_rate: new Date()
+        }
+      })
+
+      return await prisma.rate_res.findFirst({
+        where: {
+          user_id: Number(userId),
+          res_id: Number(resId)
+        }
+      })
     }
 
-    return await RateRes.create({
-      user_id: userId,
-      res_id: resId,
-      amount,
-      date_rate: new Date()
+    return await prisma.rate_res.create({
+      data: {
+        user_id: Number(userId),
+        res_id: Number(resId),
+        amount: Number(amount),
+        date_rate: new Date()
+      }
     })
   },
 
-  updateRate: async (req) => {
+  async updateRate(req) {
     const { userId, resId, amount } = req.body
 
-    const existingRate = await RateRes.findOne({
+    const existingRate = await prisma.rate_res.findFirst({
       where: {
-        user_id: userId,
-        res_id: resId
+        user_id: Number(userId),
+        res_id: Number(resId)
       }
     })
 
@@ -38,28 +56,48 @@ const rateService = {
       throw new NotFoundError("Không tìm thấy đánh giá của user này tại nhà hàng")
     }
 
-    existingRate.amount = amount
-    existingRate.date_rate = new Date()
-    await existingRate.save()
+    await prisma.rate_res.updateMany({
+      where: {
+        user_id: Number(userId),
+        res_id: Number(resId)
+      },
+      data: {
+        amount: Number(amount),
+        date_rate: new Date()
+      }
+    })
 
     return true
   },
 
-  getRatesByRestaurant: async (req) => {
-    const { resId } = req.body
-    return await RateRes.findAll({
-      where: { res_id: resId },
-      include: [{ model: User, attributes: ['user_id', 'full_name'] }]
+  async getRatesByRestaurant(req) {
+    const { resId } = req.body 
+
+    return await prisma.rate_res.findMany({
+      where: {
+        res_id: Number(resId)
+      },
+      include: {
+        Users: {
+          select: {
+            id: true,
+            fullName: true
+          }
+        }
+      }
     })
   },
 
-  getRatesByUser: async (req) => {
-    const { userId } = req.body
-    return await RateRes.findAll({
-      where: { user_id: userId },
-      include: [{ model: Restaurant, attributes: ['res_id', 'res_name'] }]
+  async getRatesByUser(req) {
+    const { userId } = req.body 
+
+    return await prisma.rate_res.findMany({
+      where: {
+        user_id: Number(userId)
+      },
+      include: {
+        restaurant: true
+      }
     })
   }
 }
-
-export default rateService
