@@ -1,7 +1,7 @@
-import likeService from '../services/like.service.js'
+import { likeService } from '../services/like.service.js'
 import { responseSuccess } from '../common/helpers/response.helper.js'
 
-const likeController = {
+export const likeController = {
   async toggleLikeRestaurant(req, res, next) {
     const result = await likeService.toggleLike(req)
     const response = responseSuccess(result.data, result.message)
@@ -20,5 +20,3 @@ const likeController = {
     res.json(response)
   }
 }
-
-export default likeController

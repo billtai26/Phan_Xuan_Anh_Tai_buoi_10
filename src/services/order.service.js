@@ -1,17 +1,17 @@
-import { Order } from '../models/association.js'
+import { prisma } from '../common/prisma/connect.prisma.js'
 
-const orderService = {
-  createOrder: async (req) => {
+export const orderService = {
+  async createOrder(req) {
     const { userId, foodId, amount, code, arrSubId } = req.body
-    
-    return await Order.create({
-      user_id: userId,
-      food_id: foodId,
-      amount,
-      code,
-      arr_sub_id: arrSubId
+
+    return await prisma.orders.create({
+      data: {
+        userId: Number(userId),
+        foodId: Number(foodId),
+        amount: Number(amount),
+        code: code,
+        arr_sub_id: arrSubId
+      }
     })
   }
 }
-
-export default orderService
